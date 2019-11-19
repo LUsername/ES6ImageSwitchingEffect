@@ -36,6 +36,38 @@
 
         this._classify(data);
     };
+
+    // 实现classify方法
+    Img.prototype._classify = function(data) {
+        let srcs = [];
+        data.forEach(({ type, title, alt, src }) => {
+            if (!this.types.includes(type)) {
+                this.types.push(type);
+            }
+            if (!Object.keys(this.classified).includes(type)) {
+                this.classified[type] = [];
+            }
+            if (!srcs.includes(src)) {
+                // 图片没有生成过
+                // 生成图片
+                // 添加到 对应的分类中
+                srcs.push(src);
+                let figure = document.createElement('figure');
+                let img = document.createElement('img');
+                let figcaption = document.createElement('figcaption');
+                img.src = src;
+                img.setAttribute('alt', alt);
+                figcaption.innerText = title;
+                methods.appendChild(figure, img, figcaption);
+                this.all.push(figure);
+                this.classified[type].push(this.all.length - 1);
+            } else {
+                // 去all中 找到对应的图片
+                // 添加到对应的分类中
+                this.classified[type].push(srcs.findIndex(s1 => s1 === src));
+            }
+        })
+    }
     Img.prototype._createElement = function() {
 
     };
