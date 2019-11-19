@@ -11,6 +11,7 @@
 
 <body>
     <div class="wrap">
+        <!-- 
         <div class="__Img__container">
             <ul class="__Img__classisy">
                 <li class="__Img__classify__type-btn __Img__type-btn-active">类别1</li>
@@ -22,15 +23,23 @@
                     <figcaption>title</figcaption>
                 </figure>
             </div>
-        </div>
-        <div class="__Img__overlay">
-            <div class="__Img__overlay-prev-btn"></div>
-            <div class="__Img__overlay-next-btn"></div>
-            <img src="./assets/images/1.jpg" alt="">
-        </div>
+        </div> -->
     </div>
+    <!-- 
+    <div class="__Img__overlay">
+        <div class="__Img__overlay-prev-btn"></div>
+        <div class="__Img__overlay-next-btn"></div>
+        <img src="./assets/images/1.jpg" alt="">
+    </div> -->
     <script src="./assets/js/index.js"></script>
     <script src="./assets/js/data.js"></script>
+    <script>
+        const img = new $Img({
+            data,
+            initType: 'JavaScript',
+            parasitifer: '#wrap'
+        });
+    </script>
 </body>
 
 </html>
