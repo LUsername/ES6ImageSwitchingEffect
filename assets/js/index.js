@@ -85,11 +85,11 @@
         let typesBtn = [];
         for (let type of this.types.values()) {
             typesBtn.push(
-                `<li class="__Img__classify__type-btn${type===this.culType?'__Img__type-btn-active':''} ">${type}</li>`
+                `<li class="__Img__classify__type-btn${type===this.culType?' __Img__type-btn-active':''} ">${type}</li>`
             )
         }
         // 整体的模板
-        let template = `<ul class="__Img__classisy">${typesBtn.join('')}</ul><div class="__Img__img-container"></div>`;
+        let template = `<ul class="__Img__classify">${typesBtn.join('')}</ul><div class="__Img__img-container"></div>`;
         let wrap = document.createElement('div');
         wrap.className = '__Img__container';
         wrap.innerHTML = template;
@@ -97,8 +97,8 @@
         methods.appendChild(this.imgContainer, ...this.getImgsByType(this.culType));
         this.wrap = wrap;
         this.typeBtnEls = methods.$$('.__Img__classify__type-btn', wrap);
-        this.figures = methods.$$('.figure', wrap);
-
+        this.figures = methods.$$('figure', wrap);
+        this._calcPosition(this.figures);
         // 遮罩层
         let overlay = document.createElement('div');
         overlay.className = '__Img__overlay';
@@ -119,7 +119,24 @@
 
     // 显示元素
     Img.prototype._show = function() {
-
+        methods.appendChild(this.parasitifer, this.wrap);
+        setTimeout(() => {
+            this.figures.forEach(figure => {
+                figure.style.transform = 'scale(1,1)';
+                figure.style.opacity = '1';
+            })
+        })
     };
+
+    Img.prototype._calcPosition = function(figures) {
+        let horizontalImgIndex = 0;
+        figures.forEach((figure, index) => {
+            figure.style.top = parseInt(index / 4) * (140 + 15) + 'px';
+            figure.style.left = horizontalImgIndex * (240 + 15) + 'px';
+            horizontalImgIndex = (horizontalImgIndex + 1) % 4;
+        })
+        let len = Math.ceil(figures.length / 4);
+        this.imgContainer.style.height = len * 140 + (len - 1) * 15 + 'px';
+    }
     window.$Img = Img;
 })(window, document)
