@@ -36,6 +36,9 @@
         this.culType = initType; //当前显示的图片分类
         this.parasitifer = methods.$(parasitifer); //挂载点
         this.imgContainer = null; // 所有图片的容器
+        this.wrap = null; // 整体容器
+        this.typeBtnEls = null; // 所有分类按钮组成的数组
+        this.figures = null; // 所有当前显示的图片组成的数组
         this._classify(data);
     };
 
@@ -73,7 +76,7 @@
 
     // 根据分类获取图片
     Img.prototype.getImgsByType = function(type) {
-        return type === this.culType ? [...this.all] : this.classified[type].map(index => this.all[index]);
+        return type === '全部' ? [...this.all] : this.classified[type].map(index => this.all[index]);
     }
 
     // 生成DOM
@@ -91,6 +94,22 @@
         wrap.className = '__Img__container';
         wrap.innerHTML = template;
         this.imgContainer = methods.$('.__Img__img-container', wrap);
+        methods.appendChild(this.imgContainer, ...this.getImgsByType(this.culType));
+        this.wrap = wrap;
+        this.typeBtnEls = methods.$$('.__Img__classify__type-btn', wrap);
+        this.figures = methods.$$('.figure', wrap);
+
+        // 遮罩层
+        let overlay = document.createElement('div');
+        overlay.className = '__Img__overlay';
+        overlay.innerHTML = `
+        <div class="__Img__overlay-prev-btn"></div>
+        <div class="__Img__overlay-next-btn"></div>
+        <img src="" alt="">
+        `;
+        methods.appendChild(this.wrap, overlay);
+        this.overlay = overlay;
+        this.previewImg = methods.$('img', overlay);
     };
 
     // 绑定事件
