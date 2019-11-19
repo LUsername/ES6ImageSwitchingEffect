@@ -25,8 +25,16 @@
         this._bind();
         this._show();
     }
-    Img.prototype._init = function({}) {
 
+    // 实现init方法
+    Img.prototype._init = function({ data, initType, parasitifer }) {
+        this.types = ['全部']; //所有的分类
+        this.all = []; //所有图片元素
+        this.classified = { '全部': [] }; //按照类型分类后的图片
+        this.culType = initType; //当前显示的图片分类
+        this.parasitifer = methods.$(parasitifer); //挂载点
+
+        this._classify(data);
     };
     Img.prototype._createElement = function() {
 
