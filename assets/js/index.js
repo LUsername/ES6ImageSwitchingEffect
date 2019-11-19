@@ -5,6 +5,20 @@
  * 4、显示到页面上
  */
 (function(window, document) {
+    // 实现公共方法
+    const methods = {
+        appendChild(parent, ...children) {
+            children.forEach(el => {
+                parent.appendChild(el);
+            })
+        },
+        $(selector, root = document) {
+            return root.querySelector(selector);
+        },
+        $$(selector, root = document) {
+            return root.querySelectorAll(selector);
+        }
+    };
     let Img = function(options) {
         this._init(options);
         this._createElement();
