@@ -19,6 +19,8 @@
             return root.querySelectorAll(selector);
         }
     };
+
+    // 构造函数
     let Img = function(options) {
         this._init(options);
         this._createElement();
@@ -26,18 +28,18 @@
         this._show();
     }
 
-    // 实现init方法
+    // 实现init方法：初始化
     Img.prototype._init = function({ data, initType, parasitifer }) {
         this.types = ['全部']; //所有的分类
         this.all = []; //所有图片元素
         this.classified = { '全部': [] }; //按照类型分类后的图片
         this.culType = initType; //当前显示的图片分类
         this.parasitifer = methods.$(parasitifer); //挂载点
-
+        this.imgContainer = null; // 所有图片的容器
         this._classify(data);
     };
 
-    // 实现classify方法
+    // 实现classify方法：对图片进行分类
     Img.prototype._classify = function(data) {
         let srcs = [];
         data.forEach(({ type, title, alt, src }) => {
@@ -68,12 +70,35 @@
             }
         })
     }
-    Img.prototype._createElement = function() {
 
+    // 根据分类获取图片
+    Img.prototype.getImgsByType = function(type) {
+        return type === this.culType ? [...this.all] : this.classified[type].map(index => this.all[index]);
+    }
+
+    // 生成DOM
+    Img.prototype._createElement = function() {
+        // 创建分类按钮
+        let typesBtn = [];
+        for (let type of this.types.values()) {
+            typesBtn.push(
+                `<li class="__Img__classify__type-btn${type===this.culType?'__Img__type-btn-active':''} ">${type}</li>`
+            )
+        }
+        // 整体的模板
+        let template = `<ul class="__Img__classisy">${typesBtn.join('')}</ul><div class="__Img__img-container"></div>`;
+        let wrap = document.createElement('div');
+        wrap.className = '__Img__container';
+        wrap.innerHTML = template;
+        this.imgContainer = methods.$('.__Img__img-container', wrap);
     };
+
+    // 绑定事件
     Img.prototype._bind = function() {
 
     };
+
+    // 显示元素
     Img.prototype._show = function() {
 
     };
