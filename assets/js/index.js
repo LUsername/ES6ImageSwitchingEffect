@@ -5,6 +5,7 @@
  * 4、显示到页面上
  */
 (function(window, document) {
+    let canChange = true;
     // 实现公共方法
     const methods = {
         appendChild(parent, ...children) {
@@ -96,7 +97,7 @@
         this.imgContainer = methods.$('.__Img__img-container', wrap);
         methods.appendChild(this.imgContainer, ...this.getImgsByType(this.culType));
         this.wrap = wrap;
-        this.typeBtnEls = methods.$$('.__Img__classify__type-btn', wrap);
+        this.typeBtnEls = [...methods.$$('.__Img__classify__type-btn', wrap)];
         this.figures = [...methods.$$('figure', wrap)];
         this._calcPosition(this.figures);
         // 遮罩层
@@ -127,13 +128,57 @@
     Img.prototype._bind = function() {
         methods.$('.__Img__classify', this.wrap).addEventListener('click', ({ target }) => {
             if (target.nodeName !== 'LI') return;
+            if (!canChange) return;
+            canChange = false;
             const type = target.innerText;
             const els = this.getImgsByType(type);
 
             let prevImgs = this.figures.map(figure => methods.$('img', figure).src);
             let nextImgs = els.map(figure => methods.$('img', figure).src);
             const diffArr = this._diff(prevImgs, nextImgs);
-            console.log(diffArr);
+            diffArr.forEach(([, i2]) => {
+                this.figures.every((figure, index) => {
+                    let src = methods.$('img', figure).src;
+                    if (src === nextImgs[i2]) {
+                        this.figures.splice(index, 1);
+                        return false;
+                    }
+                    return true;
+                });
+            });
+            this._calcPosition(els);
+
+            let needAppendEls = [];
+            if (diffArr.length) {
+                let nextElsIndex = diffArr.map(([, i2]) => i2);
+                els.forEach((figure, index) => {
+                    if (!nextElsIndex.includes(index)) {
+                        needAppendEls.push(figure);
+                    }
+                })
+            } else {
+                needAppendEls = els;
+            }
+            this.figures.forEach(el => {
+                el.style.transform = 'scale(0,0) translate(0,100%)';
+                el.style.opacity = '0';
+            });
+            methods.appendChild(this.imgContainer, ...needAppendEls);
+            setTimeout(() => {
+                els.forEach(el => {
+                    el.style.transform = 'scale(1,1) translate(0,0)';
+                    el.style.opacity = '1';
+                })
+            });
+            setTimeout(() => {
+                this.figures.forEach(figure => {
+                    this.imgContainer.removeChild(figure);
+                });
+                this.figures = els;
+                canChange = true;
+            }, 600);
+            this.typeBtnEls.forEach(btn => (btn.className = '__Img__classify__type-btn'));
+            target.className = '__Img__classify__type-btn __Img__type-btn-active';
         })
     };
 
