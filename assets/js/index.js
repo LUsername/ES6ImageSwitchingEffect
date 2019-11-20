@@ -97,7 +97,7 @@
         methods.appendChild(this.imgContainer, ...this.getImgsByType(this.culType));
         this.wrap = wrap;
         this.typeBtnEls = methods.$$('.__Img__classify__type-btn', wrap);
-        this.figures = methods.$$('figure', wrap);
+        this.figures = [...methods.$$('figure', wrap)];
         this._calcPosition(this.figures);
         // 遮罩层
         let overlay = document.createElement('div');
@@ -112,9 +112,29 @@
         this.previewImg = methods.$('img', overlay);
     };
 
+    Img.prototype._diff = function(prevImgs, nextImgs) {
+        let diffArr = [];
+        prevImgs.forEach((src1, index1) => {
+            let index2 = nextImgs.findIndex(src2 => src1 === src2);
+            if (index2 != -1) {
+                diffArr.push([index1, index2]);
+            }
+        })
+        return diffArr;
+    }
+
     // 绑定事件
     Img.prototype._bind = function() {
+        methods.$('.__Img__classify', this.wrap).addEventListener('click', ({ target }) => {
+            if (target.nodeName !== 'LI') return;
+            const type = target.innerText;
+            const els = this.getImgsByType(type);
 
+            let prevImgs = this.figures.map(figure => methods.$('img', figure).src);
+            let nextImgs = els.map(figure => methods.$('img', figure).src);
+            const diffArr = this._diff(prevImgs, nextImgs);
+            console.log(diffArr);
+        })
     };
 
     // 显示元素
@@ -122,7 +142,7 @@
         methods.appendChild(this.parasitifer, this.wrap);
         setTimeout(() => {
             this.figures.forEach(figure => {
-                figure.style.transform = 'scale(1,1)';
+                figure.style.transform = 'scale(1,1) translate(0,0)';
                 figure.style.opacity = '1';
             })
         })
@@ -133,6 +153,7 @@
         figures.forEach((figure, index) => {
             figure.style.top = parseInt(index / 4) * (140 + 15) + 'px';
             figure.style.left = horizontalImgIndex * (240 + 15) + 'px';
+            figure.style.transform = 'scale(0,0) translate(0,-100%)';
             horizontalImgIndex = (horizontalImgIndex + 1) % 4;
         })
         let len = Math.ceil(figures.length / 4);
